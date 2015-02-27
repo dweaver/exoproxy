@@ -16,6 +16,19 @@ var proxy = httpProxy.createProxyServer({
 //    cert: fs.readFileSync('server.crt', 'utf8')
 //  }
 });
+
+function log(req, res) {
+  var body = '';
+  winston.info('request', req.method, req.url);
+  winston.info('request', req.headers);
+
+  req.on('data', function (chunk) {
+    body += chunk;
+  });
+  req.on('end', function () {
+    winston.info('request', body);
+  });
+}
  
 // 
 // Create your custom server and just call `proxy.web()` to proxy 
@@ -23,8 +36,7 @@ var proxy = httpProxy.createProxyServer({
 // also you can use `proxy.ws()` to proxy a websockets request 
 // 
 var server = http.createServer(function(req, res) {
-  //winston.info(req.method, req.url);
-  //winston.info(req.headers);
+  log(req, res); 
 
   // You can define here your custom logic to handle the request 
   // and then proxy the request. 
