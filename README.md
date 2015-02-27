@@ -1,5 +1,7 @@
 # Proxy Server
 
+Currently this only supports HTTP->HTTP proxying, and does not even log requests and responses. HTTPS and logging are in progress.
+
 ```
 $ npm install
 $ node index.js

@@ -1,16 +1,20 @@
-var fs = require('fs');
-
-var http = require('http'),
+var winston = require('winston'),
+    morgan = require('morgan'),
+    fs = require('fs'), 
+    http = require('http'),
     httpProxy = require('http-proxy');
- 
+
+var logger = morgan('combined');
+
 // 
 // Create a proxy server with custom application logic 
 // 
 var proxy = httpProxy.createProxyServer({
-  ssl: {
-    key: fs.readFileSync('server.key', 'utf8'),
-    cert: fs.readFileSync('server.crt', 'utf8')
-  }
+// HTTPS does not work yet
+//  ssl: {
+//    key: fs.readFileSync('server.key', 'utf8'),
+//    cert: fs.readFileSync('server.crt', 'utf8')
+//  }
 });
  
 // 
@@ -19,9 +23,15 @@ var proxy = httpProxy.createProxyServer({
 // also you can use `proxy.ws()` to proxy a websockets request 
 // 
 var server = http.createServer(function(req, res) {
+  //winston.info(req.method, req.url);
+  //winston.info(req.headers);
+
   // You can define here your custom logic to handle the request 
   // and then proxy the request. 
-  proxy.web(req, res, { target: 'http://m2.exosite.com' });
+  logger(req, res, function (err) {
+    if (err) { winston.error(err); }
+    proxy.web(req, res, { target: 'http://m2.exosite.com' });
+  });
 });
  
 console.log("listening on port 5050");

@@ -8,13 +8,16 @@
   },
   "keywords": [
     "Exosite",
-    "Proxy",
+    "proxy",
     "HTTP",
     "HTTPS"
   ],
+  "repository": "https://github.com/dweaver/exoproxy",
   "author": "Dan Weaver",
   "license": "MIT",
   "dependencies": {
-    "http-proxy": "^1.8.1"
+    "http-proxy": "^1.8.1",
+    "morgan": "^1.5.1",
+    "winston": "^0.9.0"
   }
 }
