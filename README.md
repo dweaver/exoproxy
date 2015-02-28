@@ -1,15 +1,16 @@
 # Proxy Server
+Proxies both http and https requests to m2.exosite.com.  https requests to Exosite
+are proxied via http.
 
-Currently this only supports HTTP->HTTP proxying, and does not even log requests and responses. HTTPS and logging are in progress.
+Performs basic logging of all requests.
+
 
 ```
 $ npm install
 $ node index.js
 ```
 
-Follow the instructions [here](https://devcenter.heroku.com/articles/ssl-certificate-self) for creating a self-signed certificate. After following these instructions you'll have a server.key and server.crt file. Place these in the root and call them  
+#Generating self signed certificates
+Generate self signed certificates with the following:
 
-```
-server.key
-server.crt
-```
+    openssl req -newkey rsa:2048 -new -nodes -x509 -days 3650 -keyout key.pem -out cert.pem
