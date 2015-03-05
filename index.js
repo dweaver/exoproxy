@@ -64,12 +64,12 @@ var httpsServer = https.createServer(ssl_options, function(req, res) {
 var httpServer = http.createServer( function(req, res) {
   log(req, res); 
   proxyM2.web(req, res, { target: 'http://m2.exosite.com' });
-  proxyM2.on('proxyRes', function (proxyRes, req, res) {
-    logger.info('Response Headers:\r\n', JSON.stringify(proxyRes.headers, true, 2));
-  });
-
 });
 
+proxyM2.on('proxyRes', function (proxyRes, req, res) {
+    logger.info('Response code:     ', proxyRes.statusCode);
+    logger.info('Response headers:  ', proxyRes.headers);
+  });
 
 
  
