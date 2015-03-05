@@ -39,7 +39,7 @@ function log(req, res) {
   });
   
   res.on('finish', function () {
-    logger.info('Response sent to client', body);
+    logger.info('Response sent to client');
   });
   
   res.oldWrite = res.write;
