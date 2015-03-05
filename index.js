@@ -9,19 +9,42 @@ var winston = require('winston'),
 // 
 // Create a proxy server with custom application logic 
 // 
-var proxy = httpProxy.createProxyServer({});
+var proxyLocal = httpProxy.createProxyServer({});
+var proxyM2 = httpProxy.createProxyServer({});
+
+// setup logger
+var logger = new winston.Logger({
+  transports: [
+    new winston.transports.Console({
+      level: 'debug',
+      handleExceptions: true,
+      json: false,
+        colorize: true
+    })
+  ]}
+);
 
 function log(req, res) {
   var body = '';
-  winston.info('request', req.method, req.url);
-  winston.info('request', req.headers);
+  logger.info('*************** request starting ****************');
+  logger.info('Requesting IP: ', req.connection.remoteAddress);
+  logger.info('Method/url: ', req.method, req.url);
+  logger.info('Headers:    ', JSON.stringify(req.headers, true, 2));
 
   req.on('data', function (chunk) {
     body += chunk;
   });
+
   req.on('end', function () {
-    winston.info('request', body);
+    logger.info('Body:       ', body);
+    logger.info('************** request ending *************');
   });
+  
+  res.oldWrite = res.write;
+  res.write = function(data) {
+    logger.info('Response Body:\r\n',data.toString('UTF8'));
+    res.oldWrite(data);
+  }
 }
  
  
@@ -35,19 +58,20 @@ var ssl_options = {
 // create https server
 var httpsServer = https.createServer(ssl_options, function(req, res) {
   // send https traffic to http server
-  proxy.web(req, res, { target: 'http://localhost' });
+  proxyLocal.web(req, res, { target: 'http://localhost' });
 });
 
 var httpServer = http.createServer( function(req, res) {
   log(req, res); 
-
-  // You can define here your custom logic to handle the request 
-  // and then proxy the request. 
-  logger(req, res, function (err) {
-    if (err) { winston.error(err); }
-    proxy.web(req, res, { target: 'http://m2.exosite.com' });
+  proxyM2.web(req, res, { target: 'http://m2.exosite.com' });
+  proxyM2.on('proxyRes', function (proxyRes, req, res) {
+    logger.info('Response Headers:\r\n', JSON.stringify(proxyRes.headers, true, 2));
   });
+
 });
+
+
+
  
 console.log("Listening for ssl traffic on port 443 and non-ssl on port 80");
 httpsServer.listen(443);
