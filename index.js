@@ -26,23 +26,25 @@ var logger = new winston.Logger({
 
 function log(req, res) {
   var body = '';
-  logger.info('*************** request starting ****************');
-  logger.info('Requesting IP: ', req.connection.remoteAddress);
-  logger.info('Method/url: ', req.method, req.url);
-  logger.info('Headers:    ', JSON.stringify(req.headers, true, 2));
+  logger.info('*** New request received from: ', req.connection.remoteAddress, '***');
+  logger.info('Request method/url: ', req.method, req.url);
+  logger.info('Request Headers:    ', req.headers);
 
   req.on('data', function (chunk) {
     body += chunk;
   });
 
   req.on('end', function () {
-    logger.info('Body:       ', body);
-    logger.info('************** request ending *************');
+    logger.info('Request body:       ', body);
+  });
+  
+  res.on('finish', function () {
+    logger.info('Response sent to client', body);
   });
   
   res.oldWrite = res.write;
   res.write = function(data) {
-    logger.info('Response Body:\r\n',data.toString('UTF8'));
+    logger.info('Response Body:      ',data.toString('UTF8'));
     res.oldWrite(data);
   }
 }
