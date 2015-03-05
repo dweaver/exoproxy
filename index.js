@@ -1,11 +1,10 @@
 var winston = require('winston'),
-    morgan = require('morgan'),
     fs = require('fs'), 
     https = require('https'),
     http = require('http'),
     httpProxy = require('http-proxy');
 
-var logger = morgan('combined');
+    
 
 // 
 // Create a proxy server with custom application logic 
